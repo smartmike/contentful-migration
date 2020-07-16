@@ -649,4 +649,125 @@ describe('the migration', function () {
     }
     expect(result).to.be.undefined();
   });
+
+  it('adds tags to entries ', async function () {
+    await request({
+      method: 'PUT',
+      url: '/content_types/blogpost',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1
+      },
+      data: {
+        name: 'blog post',
+        fields: [
+          {
+            name: 'title',
+            id: 'title',
+            type: 'Symbol'
+          }
+        ]
+      }
+    });
+
+    await request({
+      method: 'PUT',
+      url: '/content_types/blogpost/published',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1,
+        'X-Contentful-Version': 1
+      }
+    });
+
+    // TODO: Why is sys needed here and not on cts?
+    await request({
+      method: 'PUT',
+      url: '/tags/new',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1
+      },
+      data: {
+        name: 'new',
+        sys: { id: 'new' }
+      }
+    });
+
+    await request({
+      method: 'PUT',
+      url: '/tags/old',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1
+      },
+      data: {
+        name: 'old',
+        sys: { id: 'old' }
+      }
+    });
+
+    await request({
+      method: 'POST',
+      url: '/entries',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1,
+        'X-Contentful-Content-Type': 'blogpost'
+      },
+      data: {
+        fields: { title: { 'en-US': 'hello!' } },
+        metadata: {
+          tags: [
+            {
+              sys: {
+                id: 'new',
+                type: 'Link',
+                linkType: 'Tag'
+              }
+            }
+          ]
+        }
+      }
+    });
+
+    await migrator(function (migration) {
+      migration.setTagsForEntries({
+        contentType: 'blogpost',
+        from: ['title'],
+        setTagsForEntry: (fields, entryTags, apiTags) => {
+          const newTag = apiTags.find(tag => tag.sys.id === 'old');
+          return [...entryTags, newTag];
+        } });
+    });
+
+    const blogEntries = await request({
+      method: 'GET',
+      url: '/entries?content_type=blogpost',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1
+      }
+    });
+
+    const blogEntriesWithoutSysAndFields = blogEntries.items.map(i => _.omit(i, ['sys', 'fields']));
+
+    const entries = [
+      {
+        metadata: {
+          tags: [
+            {
+              sys: {
+                id: 'news',
+                type: 'Link',
+                linkType: 'Tag'
+              }
+            },
+            {
+              sys: {
+                id: 'old',
+                type: 'Link',
+                linkType: 'Tag'
+              }
+            }
+          ]
+        }
+      }
+    ];
+    expect(blogEntriesWithoutSysAndFields).to.eql(entries);
+  });
 });
