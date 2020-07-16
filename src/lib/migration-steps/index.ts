@@ -371,6 +371,17 @@ export async function migration (migrationCreator: Function, makeRequest: Functi
       const callsite = getFirstExternalCaller()
       const instanceId = instanceIdManager.getNew(id)
       dispatch(actionCreators.tag.delete(id, instanceId, callsite))
+    },
+
+    setTagsForEntries: function (transformation) {
+      const callsite = getFirstExternalCaller()
+      const id = transformation.contentType
+
+      // TODO: ?
+      const stripped = omit(transformation, 'contentType') as ContentTransform
+      const instanceId = instanceIdManager.getNew(id)
+
+      dispatch(actionCreators.contentType.setTagsForEntries(id, instanceId, stripped, callsite))
     }
   }
 

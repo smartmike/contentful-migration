@@ -752,7 +752,7 @@ describe('the migration', function () {
           tags: [
             {
               sys: {
-                id: 'news',
+                id: 'new',
                 type: 'Link',
                 linkType: 'Tag'
               }

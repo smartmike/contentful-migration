@@ -240,6 +240,20 @@ const actionCreators = {
       payload: {
         contentTypeId: id
       }
+    }),
+    setTagsForEntries: (id, instanceId, transformation: ContentTransform, callsite): Intents.EntrySetTags => new Intents.EntrySetTags({
+      type: 'contentType/setTagsForEntries',
+      meta: {
+        contentTypeInstanceId: `contentType/${id}/${instanceId}`,
+        callsite: {
+          file: callsite.getFileName(),
+          line: callsite.getLineNumber()
+        }
+      },
+      payload: {
+        transformation,
+        contentTypeId: id
+      }
     })
   },
   field: {
