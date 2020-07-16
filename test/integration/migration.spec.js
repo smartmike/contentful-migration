@@ -746,28 +746,8 @@ describe('the migration', function () {
 
     const blogEntriesWithoutSysAndFields = blogEntries.items.map(i => _.omit(i, ['sys', 'fields']));
 
-    const entries = [
-      {
-        metadata: {
-          tags: [
-            {
-              sys: {
-                id: 'new',
-                type: 'Link',
-                linkType: 'Tag'
-              }
-            },
-            {
-              sys: {
-                id: 'old',
-                type: 'Link',
-                linkType: 'Tag'
-              }
-            }
-          ]
-        }
-      }
-    ];
-    expect(blogEntriesWithoutSysAndFields).to.eql(entries);
+    expect(blogEntriesWithoutSysAndFields[0].metadata.tags.length).to.eql(2);
+    expect(blogEntriesWithoutSysAndFields[0].metadata.tags.some((tag) => tag.sys.id === 'new')).to.eql(true);
+    expect(blogEntriesWithoutSysAndFields[0].metadata.tags.some((tag) => tag.sys.id === 'old')).to.eql(true);
   });
 });

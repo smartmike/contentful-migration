@@ -603,6 +603,12 @@ class OfflineAPI {
     return this.modifiedTags.get(id)
   }
 
+  async getTagsForEnvironment (): Promise<Map<String, Tag>> {
+    // TODO: savedTags or modifiedTags?
+    // return this.savedTags
+    return this.modifiedTags
+  }
+
   public async recordRuntimeError (error) {
     this.currentRuntimeErrorsRecorded.push(error)
   }

@@ -1,6 +1,7 @@
 import * as Intents from '../intent/index'
 import ContentTransform from '../interfaces/content-transform'
 import EntryDerive from '../interfaces/entry-derive'
+import EntrySetTags from '../interfaces/entry-set-tags'
 import TransformEntryToType from '../interfaces/entry-transform-to-type'
 
 const actionCreators = {
@@ -241,7 +242,7 @@ const actionCreators = {
         contentTypeId: id
       }
     }),
-    setTagsForEntries: (id, instanceId, transformation: ContentTransform, callsite): Intents.EntrySetTags => new Intents.EntrySetTags({
+    setTagsForEntries: (id, instanceId, entryTransformationForTags: EntrySetTags, callsite): Intents.EntrySetTags => new Intents.EntrySetTags({
       type: 'contentType/setTagsForEntries',
       meta: {
         contentTypeInstanceId: `contentType/${id}/${instanceId}`,
@@ -251,7 +252,7 @@ const actionCreators = {
         }
       },
       payload: {
-        transformation,
+        entryTransformationForTags,
         contentTypeId: id
       }
     })

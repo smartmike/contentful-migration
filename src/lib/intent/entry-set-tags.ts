@@ -4,6 +4,10 @@ import { PlanMessage } from '../interfaces/plan-message'
 import chalk from 'chalk'
 
 export default class EntrySetTagsIntent extends Intent {
+  isEntrySetTags (): boolean {
+    return true
+  }
+
   endsGroup (): boolean {
     return true
   }
@@ -21,8 +25,9 @@ export default class EntrySetTagsIntent extends Intent {
     return [
       new EntrySetTagsAction(
         this.getContentTypeId(),
-        this.payload.transformation.from,
-        this.payload.transformation.transformEntryForLocale,
+        this.payload.entryTransformationForTags.from,
+        this.payload.entryTransformationForTags.setTagsForEntry,
+        this.payload.entryTransformationForTags.shouldPublish
       )
     ]
   }
@@ -40,7 +45,7 @@ export default class EntrySetTagsIntent extends Intent {
     }
   }
 
-  // ? 
+  // ?
   shouldSave () {
     return false
   }

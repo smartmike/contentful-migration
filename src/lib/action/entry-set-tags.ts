@@ -1,6 +1,7 @@
 import { APIAction } from './action'
 import { OfflineAPI } from '../offline-api'
 import Entry from '../entities/entry'
+import Tag from '../entities/tag'
 import * as _ from 'lodash'
 
 // TODO: This function is for now only copy paste from
@@ -10,48 +11,48 @@ class EntrySetTagsAction extends APIAction {
   private contentTypeId: string
   private fromFields: string[]
 
-  private transformEntryForLocale: Function
+  private setTagsForEntry: Function
   private shouldPublish: boolean | 'preserve'
 
-  constructor (contentTypeId: string, fromFields: string[], transformation: Function, shouldPublish: boolean | 'preserve' = true) {
+  // TODO: Do we need the shouldPublish boolean?
+  constructor (contentTypeId: string, fromFields: string[], entryTransformationForTags: Function, shouldPublish: boolean | 'preserve' = true) {
     super()
     this.contentTypeId = contentTypeId
     this.fromFields = fromFields
-    // this.toFields = toFields
-    this.transformEntryForLocale = transformation
+    this.setTagsForEntry = entryTransformationForTags
     this.shouldPublish = shouldPublish
   }
 
   async applyTo (api: OfflineAPI) {
+    // TODO: Refactor currently confusing naming!
     const entries: Entry[] = await api.getEntriesForContentType(this.contentTypeId)
-    const locales: string[] = await api.getLocalesForSpace()
+    const tags: Map<String, Tag> = await api.getTagsForEnvironment()
+    const apiTags = [...tags.keys()].map((tagId) => {
+      return { sys: { id: tagId, type: 'Link', linkType: 'Tag' } }
+    })
+
     for (const entry of entries) {
-      const inputs = _.pick(entry.fields, this.fromFields)
+      const entryFields = _.pick(entry.fields, this.fromFields)
+      // TODO: Do we need to transform the format of these tags?
+      const entryTags = entry.tags
+
       let changesForThisEntry = false
-      for (const locale of locales) {
-        let outputsForCurrentLocale
-        try {
-          outputsForCurrentLocale = await this.transformEntryForLocale(inputs, locale)
-        } catch (err) {
-          await api.recordRuntimeError(err)
-          continue
-        }
 
-        if (outputsForCurrentLocale === undefined) {
-          continue
-        }
-        changesForThisEntry = true
-
-        // TODO verify that the toFields actually get written to
-        // and to no other field
-        Object.keys(outputsForCurrentLocale).forEach((fieldId) => {
-          if (!entry.fields[fieldId]) {
-            entry.setField(fieldId, {})
-          }
-          entry.setFieldForLocale(fieldId, locale, outputsForCurrentLocale[fieldId])
-        })
-
+      let outputs
+      try {
+        outputs = await this.setTagsForEntry(entryFields, entryTags, apiTags)
+      } catch (err) {
+        await api.recordRuntimeError(err)
+        continue
       }
+
+      if (outputs === undefined) {
+        continue
+      }
+
+      changesForThisEntry = true
+      entry.tags = outputs
+
       if (changesForThisEntry) {
         await api.saveEntry(entry.id)
         if (this.shouldPublish === true || (this.shouldPublish === 'preserve' && entry.isPublished)) {
