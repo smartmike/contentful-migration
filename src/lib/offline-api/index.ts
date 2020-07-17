@@ -605,7 +605,6 @@ class OfflineAPI {
 
   async getTagsForEnvironment (): Promise<Map<String, Tag>> {
     // TODO: savedTags or modifiedTags?
-    // return this.savedTags
     return this.modifiedTags
   }
 

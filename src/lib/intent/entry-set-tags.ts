@@ -16,11 +16,6 @@ export default class EntrySetTagsIntent extends Intent {
     return false
   }
 
-  // Do I need a different name then transformation?
-
-  // ??
-  // this.payload.transformation.shouldPublish
-
   toActions () {
     return [
       new EntrySetTagsAction(
@@ -34,10 +29,12 @@ export default class EntrySetTagsIntent extends Intent {
 
   toPlanMessage (): PlanMessage {
     // TODO: What to say in the details column?
+
     // details: [
     //   `from: ${this.payload.transformation.from}`,
     //   `to: ${this.payload.transformation.to}`
     // ],
+
     return {
       heading: chalk`Adding tags on entries for {bold.yellow ${this.getContentTypeId()}}`,
       details: [],

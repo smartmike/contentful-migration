@@ -653,7 +653,7 @@ describe('the migration', function () {
   it('adds tags to entries ', async function () {
     await request({
       method: 'PUT',
-      url: '/content_types/blogpost',
+      url: '/content_types/article',
       headers: {
         'X-Contentful-Beta-Dev-Spaces': 1
       },
@@ -671,7 +671,7 @@ describe('the migration', function () {
 
     await request({
       method: 'PUT',
-      url: '/content_types/blogpost/published',
+      url: '/content_types/article/published',
       headers: {
         'X-Contentful-Beta-Dev-Spaces': 1,
         'X-Contentful-Version': 1
@@ -708,7 +708,7 @@ describe('the migration', function () {
       url: '/entries',
       headers: {
         'X-Contentful-Beta-Dev-Spaces': 1,
-        'X-Contentful-Content-Type': 'blogpost'
+        'X-Contentful-Content-Type': 'article'
       },
       data: {
         fields: { title: { 'en-US': 'hello!' } },
@@ -728,7 +728,7 @@ describe('the migration', function () {
 
     await migrator(function (migration) {
       migration.setTagsForEntries({
-        contentType: 'blogpost',
+        contentType: 'article',
         from: ['title'],
         setTagsForEntry: (fields, entryTags, apiTags) => {
           const newTag = apiTags.find(tag => tag.sys.id === 'old');
@@ -738,7 +738,7 @@ describe('the migration', function () {
 
     const blogEntries = await request({
       method: 'GET',
-      url: '/entries?content_type=blogpost',
+      url: '/entries?content_type=article',
       headers: {
         'X-Contentful-Beta-Dev-Spaces': 1
       }

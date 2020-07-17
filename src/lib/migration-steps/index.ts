@@ -377,8 +377,6 @@ export async function migration (migrationCreator: Function, makeRequest: Functi
     setTagsForEntries: function (transformation) {
       const callsite = getFirstExternalCaller()
       const id = transformation.contentType
-
-      // TODO: ?
       const stripped = omit(transformation, 'contentType') as EntrySetTags
       const instanceId = instanceIdManager.getNew(id)
 

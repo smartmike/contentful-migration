@@ -4,9 +4,6 @@ import Entry from '../entities/entry'
 import Tag from '../entities/tag'
 import * as _ from 'lodash'
 
-// TODO: This function is for now only copy paste from
-// EntryTransformAction and has to be adjusted!
-
 class EntrySetTagsAction extends APIAction {
   private contentTypeId: string
   private fromFields: string[]
@@ -33,7 +30,6 @@ class EntrySetTagsAction extends APIAction {
 
     for (const entry of entries) {
       const entryFields = _.pick(entry.fields, this.fromFields)
-      // TODO: Do we need to transform the format of these tags?
       const entryTags = entry.tags
 
       let changesForThisEntry = false
