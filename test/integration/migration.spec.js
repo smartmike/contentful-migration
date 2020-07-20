@@ -650,7 +650,7 @@ describe('the migration', function () {
     expect(result).to.be.undefined();
   });
 
-  it('adds tags to entries ', async function () {
+  it('adds tags to entry', async function () {
     await request({
       method: 'PUT',
       url: '/content_types/article',
@@ -749,5 +749,26 @@ describe('the migration', function () {
     expect(blogEntriesWithoutSysAndFields[0].metadata.tags.length).to.eql(2);
     expect(blogEntriesWithoutSysAndFields[0].metadata.tags.some((tag) => tag.sys.id === 'new')).to.eql(true);
     expect(blogEntriesWithoutSysAndFields[0].metadata.tags.some((tag) => tag.sys.id === 'old')).to.eql(true);
+  });
+
+  it('removes all tags from entry ', async function () {
+    await migrator(function (migration) {
+      migration.setTagsForEntries({
+        contentType: 'article',
+        from: ['title'],
+        setTagsForEntry: () => {
+          return [];
+        } });
+    });
+
+    const blogEntries = await request({
+      method: 'GET',
+      url: '/entries?content_type=article',
+      headers: {
+        'X-Contentful-Beta-Dev-Spaces': 1
+      }
+    });
+
+    expect(blogEntries.items[0].metadata.tags).to.eql([]);
   });
 });

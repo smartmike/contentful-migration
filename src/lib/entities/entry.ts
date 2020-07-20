@@ -19,7 +19,7 @@ class Entry {
     // TODO: Is this a viable option (always send at least [] also for
     // spaces without pc)? And could this accidentally delete tags in
     // some transform entry operations?
-    this._tags = entry.metadata?.tags || []
+    this._tags = entry.metadata?.tags
   }
 
   get id () {
@@ -102,13 +102,20 @@ class Entry {
       }
     }
 
-    // TODO: Make sure this payload won't break any spaces without
-    // product catalog enabled!
-    return {
-      sys,
-      fields: cloneDeep(this.fields),
-      metadata: { tags: cloneDeep(this.tags) }
+    let payload: APIEntry
+    if (this.tags !== undefined) {
+      payload = {
+        sys,
+        fields: cloneDeep(this.fields),
+        metadata: { tags: cloneDeep(this.tags) }
+      }
+    } else {
+      payload = {
+        sys,
+        fields: cloneDeep(this.fields)
+      }
     }
+    return payload
   }
 
   clone (): Entry {
