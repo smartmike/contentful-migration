@@ -21,33 +21,25 @@ export default class EntrySetTagsIntent extends Intent {
       new EntrySetTagsAction(
         this.getContentTypeId(),
         this.payload.entryTransformationForTags.from,
-        this.payload.entryTransformationForTags.setTagsForEntry,
-        this.payload.entryTransformationForTags.shouldPublish
+        this.payload.entryTransformationForTags.setTagsForEntry
       )
     ]
   }
 
   toPlanMessage (): PlanMessage {
-    // TODO: What to say in the details column?
-
-    // details: [
-    //   `from: ${this.payload.transformation.from}`,
-    //   `to: ${this.payload.transformation.to}`
-    // ],
-
     return {
-      heading: chalk`Adding tags on entries for {bold.yellow ${this.getContentTypeId()}}`,
-      details: [],
+      heading: chalk`Updating tags on entries for {bold.yellow ${this.getContentTypeId()}}`,
+      details: [
+        `from: ${this.payload.entryTransformationForTags.from}`
+      ],
       sections: []
     }
   }
 
-  // ?
   shouldSave () {
-    return false
+    return true
   }
 
-  // ?
   shouldPublish () {
     return false
   }

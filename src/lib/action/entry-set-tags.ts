@@ -7,17 +7,13 @@ import * as _ from 'lodash'
 class EntrySetTagsAction extends APIAction {
   private contentTypeId: string
   private fromFields: string[]
-
   private setTagsForEntry: Function
-  private shouldPublish: boolean | 'preserve'
 
-  // TODO: Do we need the shouldPublish boolean?
-  constructor (contentTypeId: string, fromFields: string[], entryTransformationForTags: Function, shouldPublish: boolean | 'preserve' = true) {
+  constructor (contentTypeId: string, fromFields: string[], entryTransformationForTags: Function) {
     super()
     this.contentTypeId = contentTypeId
     this.fromFields = fromFields
     this.setTagsForEntry = entryTransformationForTags
-    this.shouldPublish = shouldPublish
   }
 
   async applyTo (api: OfflineAPI) {
@@ -51,9 +47,6 @@ class EntrySetTagsAction extends APIAction {
 
       if (changesForThisEntry) {
         await api.saveEntry(entry.id)
-        if (this.shouldPublish === true || (this.shouldPublish === 'preserve' && entry.isPublished)) {
-          await api.publishEntry(entry.id)
-        }
       }
     }
   }

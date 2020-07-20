@@ -16,9 +16,6 @@ class Entry {
     this._version = entry.sys.version
     this._contentTypeId = entry.sys.contentType.sys.id
     this._publishedVersion = entry.sys.publishedVersion
-    // TODO: Is this a viable option (always send at least [] also for
-    // spaces without pc)? And could this accidentally delete tags in
-    // some transform entry operations?
     this._tags = entry.metadata?.tags
   }
 
