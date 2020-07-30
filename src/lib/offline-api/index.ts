@@ -393,6 +393,9 @@ class OfflineAPI {
     // Mutate version bump
     entry.version = entry.version + 1
 
+    // TODO: Add a validator for entries here that checks their final
+    // payload and checks it against existing tags.
+
     return entry
   }
 
