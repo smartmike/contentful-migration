@@ -33,6 +33,7 @@ class EntrySetTagsAction extends APIAction {
       let outputs
       try {
         outputs = await this.setTagsForEntry(entryFields, entryTags, apiTags)
+        // TODO: Check here for duplicate tags and or nonexisting? or where?
       } catch (err) {
         await api.recordRuntimeError(err)
         continue

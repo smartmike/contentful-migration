@@ -20,6 +20,7 @@ const addSidebarWidgetsToExisting = require('../../examples/27-add-sidebar-widge
 const createTag = require('../../examples/28-create-tag');
 const modifyTag = require('../../examples/29-modify-tag');
 const deleteTag = require('../../examples/30-delete-tag');
+const setTagsForEntries = require('../../examples/31-set-tags-for-entries');
 
 const { createMigrationParser } = require('../../built/lib/migration-parser');
 const co = Bluebird.coroutine;
@@ -726,15 +727,7 @@ describe('the migration', function () {
       }
     });
 
-    await migrator(function (migration) {
-      migration.setTagsForEntries({
-        contentType: 'article',
-        from: ['title'],
-        setTagsForEntry: (fields, entryTags, apiTags) => {
-          const newTag = apiTags.find(tag => tag.sys.id === 'old');
-          return [...entryTags, newTag];
-        } });
-    });
+    await migrator(setTagsForEntries);
 
     const blogEntries = await request({
       method: 'GET',

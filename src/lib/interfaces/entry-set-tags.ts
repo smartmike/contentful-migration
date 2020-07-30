@@ -1,5 +1,5 @@
 export default interface EntrySetTags {
+  contentType: string,
   from: string[],
-  shouldPublish?: boolean | 'preserve',
   setTagsForEntry (inputFields: any, entryTags: object[], apiTags: object[]): any
 }
