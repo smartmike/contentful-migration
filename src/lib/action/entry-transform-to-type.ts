@@ -8,7 +8,7 @@ class EntryTransformToTypeAction extends APIAction {
   private fromFields?: string[]
   private sourceContentTypeId: string
   private targetContentTypeId: string
-  private transformEntryForLocale: (inputFields: any, locale: string) => Promise<any>
+  private transformEntryForLocale: (inputFields: any, locale: string, entry: any) => Promise<any>
   private identityKey: (fromFields: any) => Promise<string>
   private shouldPublish: boolean | 'preserve'
   private removeOldEntries: boolean
@@ -46,7 +46,7 @@ class EntryTransformToTypeAction extends APIAction {
       for (const locale of locales) {
         let outputsForCurrentLocale
         try {
-          outputsForCurrentLocale = await this.transformEntryForLocale(inputs, locale)
+          outputsForCurrentLocale = await this.transformEntryForLocale(inputs, locale, entry)
         } catch (err) {
           await api.recordRuntimeError(err)
           continue
@@ -99,6 +99,10 @@ class EntryTransformToTypeAction extends APIAction {
       if (this.updateReferences) {
         const links = await api.getLinks(entry.id, locales)
         for (const link of links) {
+          if (link.element.id === newEntryId) {
+            continue
+          }
+
           if (!link.isInArray()) {
             link.element.setFieldForLocale(link.field, link.locale,{ sys: { id: newEntryId, type: 'Link', linkType: 'Entry' } })
           } else {
